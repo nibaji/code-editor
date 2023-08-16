@@ -45,7 +45,13 @@ function App() {
 
 	return (
 		<div className="App">
-			<header className="App-header">JS Code Editor</header>
+			<header className="App-header">
+				JS Code Editor
+				<div className="buttons-holder">
+					<button onClick={onClear}>Clear Output</button>
+					<button onClick={onRun}>Run</button>
+				</div>
+			</header>
 
 			<Editor
 				language="javascript"
@@ -53,15 +59,18 @@ function App() {
 				onChange={onChange}
 				theme="vs-dark"
 			/>
-			<button onClick={onRun}>Run</button>
-			<button onClick={onClear}>Clear Output</button>
 			{/* <pre>{output}</pre> */}
+			<h5>Console logs :</h5>
 			<Editor
 				value={output}
 				theme="vs-dark"
 				height="30vh"
 				options={{
 					readOnly: true,
+					padding: {
+						top: 16,
+						bottom: 16,
+					},
 				}}
 			/>
 		</div>

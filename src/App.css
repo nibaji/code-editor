@@ -3,14 +3,26 @@
 }
 
 .App-header {
-	background-color: #282c34;
-	height: 5vh;
+	background-color: var(--primary-color);
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
+	flex-direction: row;
+	align-items: stretch;
+	justify-content: space-between;
+	padding: 16px;
 	font-size: calc(10px + 2vmin);
-	color: white;
+	font-weight: bold;
+	color: var(--secondary-color);
+}
+
+.buttons-holder {
+	display: flex;
+}
+.buttons-holder > button {
+	background-color: var(--primary-color);
+	margin-left: 8px;
+	border-radius: 12px;
+	color: var(--secondary-color);
+	border-color: var(--secondary-color);
 }
 
 pre {
@@ -20,4 +32,13 @@ pre {
 	background-color: black;
 	color: chartreuse;
 	height: 35vh;
+}
+
+h5 {
+	text-align: left;
+	padding: 8px;
+	line-height: 1em;
+	background-color: var(--primary-color);
+	color: var(--secondary-color);
+	margin: 0;
 }
