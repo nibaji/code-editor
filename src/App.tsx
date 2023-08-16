@@ -7,15 +7,22 @@ function App() {
 	const [input, setInput] = useState<string | undefined>();
 	const [output, setOutput] = useState("");
 
-	console.log = function (message) {
-		console.info();
-		console.info(message);
-		if (message) {
-			if (typeof message === "object") {
-				const stringifiedMessage = JSON.stringify(message);
-				setOutput(output + "\n" + stringifiedMessage);
-			} else setOutput(output + "\n" + message);
+	let logs: any[] = [];
+
+	console.log = function (...messages) {
+		logs.push(messages);
+		const messageArray = logs.map((e) => JSON.stringify(e));
+
+		let tempOut = "";
+		for (const message of messageArray) {
+			console.info(message);
+
+			if (message) {
+				tempOut +=
+					`${tempOut ? "\n" : ""}` + message.substring(1, message.length - 1);
+			}
 		}
+		setOutput(tempOut);
 	};
 
 	const onChange = React.useCallback((value: string | undefined) => {
@@ -28,7 +35,7 @@ function App() {
 				try {
 					eval(input);
 				} catch (error) {
-					console.log({ error });
+					console.info({ error });
 				}
 			})();
 		}
@@ -49,7 +56,14 @@ function App() {
 			<button onClick={onRun}>Run</button>
 			<button onClick={onClear}>Clear Output</button>
 			{/* <pre>{output}</pre> */}
-			<Editor value={output} theme="vs-dark" height="30vh" />
+			<Editor
+				value={output}
+				theme="vs-dark"
+				height="30vh"
+				options={{
+					readOnly: true,
+				}}
+			/>
 		</div>
 	);
 }
