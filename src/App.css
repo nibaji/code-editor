@@ -1,3 +1,19 @@
+h5 {
+	text-align: left;
+	line-height: 1em;
+	margin: 0;
+	color: var(--secondary-color);
+}
+
+button {
+	background-color: var(--primary-color);
+	margin-left: 8px;
+	border-radius: 12px;
+	color: var(--secondary-color);
+	border-color: var(--secondary-color);
+	padding: 4px 8px 4px 8px;
+}
+
 .App {
 	text-align: center;
 }
@@ -6,23 +22,29 @@
 	background-color: var(--primary-color);
 	display: flex;
 	flex-direction: row;
-	align-items: stretch;
-	justify-content: space-between;
-	padding: 16px;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 8px;
 	font-size: calc(10px + 2vmin);
 	font-weight: bold;
 	color: var(--secondary-color);
 }
 
-.buttons-holder {
-	display: flex;
+.App-header > button {
+	margin-left: 24px;
 }
-.buttons-holder > button {
+
+.console-heading-holder {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 8px;
 	background-color: var(--primary-color);
-	margin-left: 8px;
-	border-radius: 12px;
-	color: var(--secondary-color);
-	border-color: var(--secondary-color);
+}
+.console-heading-holder > button {
+	margin-left: 16px;
+	font-size: x-small;
+	background-color: red;
 }
 
 pre {
@@ -32,13 +54,4 @@ pre {
 	background-color: black;
 	color: chartreuse;
 	height: 35vh;
-}
-
-h5 {
-	text-align: left;
-	padding: 8px;
-	line-height: 1em;
-	background-color: var(--primary-color);
-	color: var(--secondary-color);
-	margin: 0;
 }

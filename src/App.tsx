@@ -5,7 +5,7 @@ import "./App.css";
 
 function App() {
 	const [input, setInput] = useState<string | undefined>();
-	const [output, setOutput] = useState("");
+	const [output, setOutput] = useState<string | undefined>("");
 
 	let logs: any[] = [];
 
@@ -33,7 +33,8 @@ function App() {
 		if (input) {
 			(() => {
 				try {
-					eval(input);
+					const snippet = new Function(input);
+					snippet();
 				} catch (error) {
 					console.info({ error });
 				}
@@ -47,10 +48,7 @@ function App() {
 		<div className="App">
 			<header className="App-header">
 				JS Code Editor
-				<div className="buttons-holder">
-					<button onClick={onClear}>Clear Output</button>
-					<button onClick={onRun}>Run</button>
-				</div>
+				<button onClick={onRun}>Run {"< />"}</button>
 			</header>
 
 			<Editor
@@ -58,9 +56,18 @@ function App() {
 				height="60vh"
 				onChange={onChange}
 				theme="vs-dark"
+				options={{
+					padding: {
+						top: 16,
+						bottom: 16,
+					},
+				}}
 			/>
 			{/* <pre>{output}</pre> */}
-			<h5>Console logs :</h5>
+			<div className="console-heading-holder">
+				<h5>Console Log</h5>
+				<button onClick={onClear}>Clear Console X</button>
+			</div>
 			<Editor
 				value={output}
 				theme="vs-dark"
