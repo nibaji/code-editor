@@ -31,7 +31,12 @@ button {
 }
 
 .App-header > button {
+	margin-left: 16px;
+}
+
+.App-header > .error-button {
 	margin-left: 24px;
+	font-size: small;
 }
 
 .console-heading-holder {
@@ -41,7 +46,7 @@ button {
 	padding: 8px;
 	background-color: var(--primary-color);
 }
-.console-heading-holder > button {
+.error-button {
 	margin-left: 16px;
 	font-size: x-small;
 	background-color: red;

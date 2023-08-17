@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 
+import * as nightOwl from "monaco-themes/themes/Night Owl.json";
 import "./App.css";
 
 function App() {
@@ -26,36 +27,56 @@ function App() {
 	};
 
 	const onChange = React.useCallback((value: string | undefined) => {
-		setInput(value);
+		if (value) {
+			setInput(value);
+			localStorage.setItem("js", value);
+		}
 	}, []);
 
 	const onRun = () => {
 		if (input) {
-			(() => {
-				try {
-					const snippet = new Function(input);
-					snippet();
-				} catch (error) {
-					console.info({ error });
-				}
-			})();
+			try {
+				const snippet = new Function(input);
+				snippet();
+			} catch (error) {
+				console.info({ error });
+			}
 		}
 	};
 
-	const onClear = () => setOutput("");
+	const onClearOutput = () => setOutput("");
+
+	const onClearAll = () => {
+		setInput("");
+		setOutput("");
+	};
+
+	useEffect(() => {
+		const savedJs = localStorage.getItem("js");
+		if (savedJs) {
+			setInput(savedJs);
+		}
+	}, []);
 
 	return (
 		<div className="App">
 			<header className="App-header">
 				JS Code Editor
-				<button onClick={onRun}>Run {"< />"}</button>
+				<button onClick={onClearAll} className="error-button">
+					Clear All X
+				</button>
+				<button onClick={onRun}>Run {"</>"}</button>
 			</header>
 
 			<Editor
 				language="javascript"
 				height="60vh"
 				onChange={onChange}
-				theme="vs-dark"
+				value={input}
+				onMount={(_editor, monaco) => {
+					monaco.editor.defineTheme("night-owl", nightOwl as any);
+					monaco.editor.setTheme("night-owl");
+				}}
 				options={{
 					padding: {
 						top: 16,
@@ -63,15 +84,18 @@ function App() {
 					},
 				}}
 			/>
-			{/* <pre>{output}</pre> */}
 			<div className="console-heading-holder">
 				<h5>Console Log</h5>
-				<button onClick={onClear}>Clear Console X</button>
+				<button onClick={onClearOutput} className="error-button">
+					Clear Console X
+				</button>
 			</div>
+			{/* <pre>{output}</pre> */}
 			<Editor
+				language="powershell"
 				value={output}
-				theme="vs-dark"
 				height="30vh"
+				loading
 				options={{
 					readOnly: true,
 					padding: {
