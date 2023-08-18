@@ -12,6 +12,7 @@ button {
 	color: var(--secondary-color);
 	border-color: var(--secondary-color);
 	padding: 4px 8px 4px 8px;
+	cursor: pointer;
 }
 
 .App {
