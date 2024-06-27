@@ -83,6 +83,13 @@ function App() {
     setOutput("");
   };
 
+  function scrollToTab() {
+    const element = document.getElementsByClassName("tab-selected")?.[0];
+    element?.scrollIntoView({
+      block: "end",
+    });
+  }
+
   function handleAddTab() {
     const id = Date.now().toString();
     const newTab: TabType = {
@@ -94,6 +101,7 @@ function App() {
     };
     setTabs({ ...tabs, [id]: newTab });
     setSelectedTab(newTab);
+    scrollToTab();
   }
 
   function handleTabClose(tab: TabType) {
@@ -130,6 +138,9 @@ function App() {
       setOutput(selectedTab?.output ?? "");
       localStorage.setItem(storage.selectedTabId, selectedTab?.id ?? "");
     }
+    setTimeout(() => {
+      scrollToTab();
+    }, 500);
   }, [JSON.stringify(selectedTab ?? {})]);
 
   useEffect(() => {
