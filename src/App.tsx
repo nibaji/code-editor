@@ -17,18 +17,11 @@ function App() {
   const [input, setInput] = useState<string>("");
   const [output, setOutput] = useState<string>("");
 
-  function setInputOutPut({
-    input,
-    output,
-  }: {
-    input: string;
-    output: string;
-  }) {
+  function setValue({ key, value }: { key: string; value: string | boolean }) {
     if (selectedTab?.id) {
       const updatedTab = {
         ...selectedTab,
-        input,
-        output,
+        [key]: value,
       };
       const updatedTabs: Tabs = {
         ...tabs,
@@ -37,6 +30,17 @@ function App() {
       localStorage.setItem(storage.tabs, JSON.stringify(updatedTabs));
       setTabs(updatedTabs);
     }
+  }
+
+  function setInputOutPut({
+    input,
+    output,
+  }: {
+    input: string;
+    output: string;
+  }) {
+    setValue({ key: "input", value: input });
+    setValue({ key: "output", value: output });
   }
 
   let logs: any[] = [];
@@ -88,6 +92,10 @@ function App() {
     element?.scrollIntoView({
       block: "end",
     });
+  }
+
+  function changeTabTitle(title: string) {
+    setValue({ key: "title", value: title });
   }
 
   function handleAddTab() {
@@ -199,11 +207,12 @@ function App() {
           <div className="tabs">
             {Object.values(tabs).map((tab) => (
               <Tab
-                key={tab.id + selectedTab?.id}
+                key={tab.id + selectedTab?.id + tab.title}
                 id={tab.id}
                 isSelected={tab.id == selectedTab?.id}
                 onClick={() => handleTabClick(tab)}
                 onClose={() => handleTabClose(tab)}
+                onChangeTitle={({ value }) => changeTabTitle(value)}
               />
             ))}
           </div>
