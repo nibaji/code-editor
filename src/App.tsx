@@ -121,7 +121,7 @@ function App() {
       </header>
 
       {tabs && (
-        <div>
+        <div className="tabs">
           {Object.values(tabs).map((tab) => (
             <Tab
               id={tab.id}

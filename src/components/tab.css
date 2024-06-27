@@ -10,17 +10,27 @@
   color: var(--secondary-color);
 }
 
-.tab:hover,
-.tab-selected:hover {
-  opacity: 0.5;
-}
-
 .tab,
 .tab-selected {
-  border-width: 2px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border-width: 0.2rem 0.1rem 0 0.1rem;
+  border-style: solid;
+  border-radius: 0.8rem 1.2rem 0 0;
+  padding: 0.4rem;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-.close {
-  background-color: red;
-  color: white;
+.tab-title {
+  margin-right: 1rem;
+  flex: 19;
+  overflow: scroll;
+  text-align: left;
+}
+
+.tab-title:hover {
+  opacity: 0.5;
 }

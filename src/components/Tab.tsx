@@ -44,10 +44,10 @@ const Tab = ({
 
   return (
     <div className={tabIsSelected ? "tab-selected" : "tab"}>
-      <button type="button" disabled={!tabIsSelected} onClick={handleSelect}>
+      <div className="tab-title" onClick={handleSelect}>
         {title}
-      </button>
-      <button type="button" className="close" onClick={handleClose}>
+      </div>
+      <button type="button" className="error-button" onClick={handleClose}>
         X
       </button>
     </div>
