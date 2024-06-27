@@ -14,9 +14,6 @@ function App() {
   const [tabs, setTabs] = useState<Tabs | null>(null);
   const [selectedTab, setSelectedTab] = useState<TabType | null>(null);
 
-  const storedTabs = localStorage.getItem(storage.tabs) ?? "{}";
-  const parsedTabs: Tabs = JSON.parse(storedTabs);
-
   const [input, setInput] = useState<string>("");
   const [output, setOutput] = useState<string>("");
 
@@ -100,6 +97,8 @@ function App() {
   }
 
   function handleTabClose(tab: TabType) {
+    const storedTabs = localStorage.getItem(storage.tabs) ?? "{}";
+    const parsedTabs: Tabs = JSON.parse(storedTabs);
     const storedSelectedTabId = localStorage.getItem(storage.selectedTabId);
     if (
       Object.entries(parsedTabs).length > 1 &&
@@ -134,6 +133,8 @@ function App() {
   }, [JSON.stringify(selectedTab ?? {})]);
 
   useEffect(() => {
+    const storedTabs = localStorage.getItem(storage.tabs) ?? "{}";
+    const parsedTabs: Tabs = JSON.parse(storedTabs);
     if (Object.keys(parsedTabs).length) {
       setTabs(parsedTabs);
       const storedSelectedTabId = localStorage.getItem(storage.selectedTabId);
