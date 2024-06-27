@@ -1,0 +1,26 @@
+.tab {
+  background-color: var(--secondary-color);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.tab-selected {
+  background-color: var(--primary-color);
+  border-color: var(--secondary-color);
+  color: var(--secondary-color);
+}
+
+.tab:hover,
+.tab-selected:hover {
+  opacity: 0.5;
+}
+
+.tab,
+.tab-selected {
+  border-width: 2px;
+}
+
+.close {
+  background-color: red;
+  color: white;
+}
