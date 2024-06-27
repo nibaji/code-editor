@@ -90,7 +90,8 @@ function App() {
   function scrollToTab() {
     const element = document.getElementsByClassName("tab-selected")?.[0];
     element?.scrollIntoView({
-      block: "end",
+      behavior: "smooth",
+      block: "nearest",
     });
   }
 
