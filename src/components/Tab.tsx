@@ -34,7 +34,7 @@ const Tab = ({
   const parsedTabs = JSON.parse(storedTabs);
 
   function handleTitleChange() {
-    onChangeTitle({ value: titleInputValue || title });
+    onChangeTitle({ value: titleInputValue.replace(" ", "") || title });
     setTitleEditMode(false);
   }
 
@@ -80,8 +80,11 @@ const Tab = ({
             name="title"
             type="text"
             defaultValue={title}
+            maxLength={12}
             placeholder="Title"
-            onChange={({ target: { value } }) => setTitleInputValue(value)}
+            onChange={({ target: { value } }) =>
+              setTitleInputValue(value.replace(" ", ""))
+            }
             onBlur={handleTitleChange}
           />
         </form>

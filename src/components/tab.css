@@ -22,6 +22,9 @@
   padding: 0.4rem;
   cursor: pointer;
   font-weight: bold;
+  /* width: 20rem;
+  height: 1.6rem;
+  overflow-y: hidden; */
 }
 
 .tab-title {
