@@ -8,31 +8,27 @@ import "./tab.css";
 const Tab = ({
   id,
   isSelected,
-  callback,
+  onClick,
+  onClose,
 }: {
   id: string;
   isSelected: boolean;
-  callback: Function;
+  onClick: Function;
+  onClose: Function;
 }) => {
   const [title, setTitle] = useState("");
   const [tabIsSelected, setTabIsSelected] = useState(isSelected);
 
-  const tabs = localStorage.getItem(storage.tabs);
-  const parsedTabs = JSON.parse(tabs ?? "");
+  const storedTabs = localStorage.getItem(storage.tabs) ?? "{}";
+  const parsedTabs = JSON.parse(storedTabs);
 
   function handleSelect() {
     setTabIsSelected(true);
-    callback();
+    onClick();
   }
 
   function handleClose() {
-    if (tabs) {
-      if (Object.entries(parsedTabs).length > 1) {
-        setTabIsSelected(false);
-        delete parsedTabs[id];
-        localStorage.setItem(storage.tabs, JSON.stringify(parsedTabs));
-      }
-    }
+    onClose();
   }
 
   useEffect(() => {

@@ -14,15 +14,35 @@ function App() {
   const [tabs, setTabs] = useState<Tabs | null>(null);
   const [selectedTab, setSelectedTab] = useState<TabType | null>(null);
 
-  const storedTabs = localStorage.getItem(storage.tabs);
-  const parsedTabs: Tabs = JSON.parse(storedTabs || "");
-  const storedSelectedTabId = localStorage.getItem(storage.selectedTabId);
+  const storedTabs = localStorage.getItem(storage.tabs) ?? "{}";
+  const parsedTabs: Tabs = JSON.parse(storedTabs);
 
   const [input, setInput] = useState<string>("");
   const [output, setOutput] = useState<string>("");
 
-  let logs: any[] = [];
+  function setInputOutPut({
+    input,
+    output,
+  }: {
+    input: string;
+    output: string;
+  }) {
+    if (selectedTab?.id) {
+      const updatedTab = {
+        ...selectedTab,
+        input,
+        output,
+      };
+      const updatedTabs: Tabs = {
+        ...tabs,
+        [selectedTab.id]: updatedTab,
+      };
+      localStorage.setItem(storage.tabs, JSON.stringify(updatedTabs));
+      setTabs(updatedTabs);
+    }
+  }
 
+  let logs: any[] = [];
   console.log = function (...messages) {
     logs.push(messages);
     const messageArray = logs.map((e) => JSON.stringify(e));
@@ -39,12 +59,14 @@ function App() {
     setOutput(tempOut);
   };
 
-  const onChange = React.useCallback((value: string | undefined) => {
-    if (value) {
-      setInput(value);
-      localStorage.setItem(storage.js, value);
-    }
-  }, []);
+  const onChange = React.useCallback(
+    (value: string | undefined) => {
+      if (value && selectedTab?.id) {
+        setInput(value);
+      }
+    },
+    [tabs, selectedTab]
+  );
 
   const onRun = () => {
     if (input) {
@@ -64,19 +86,57 @@ function App() {
     setOutput("");
   };
 
+  function handleAddTab() {
+    const id = Date.now().toString();
+    const newTab: TabType = {
+      id,
+      selected: true,
+      input: "",
+      output: "",
+      title: "",
+    };
+    setTabs({ ...tabs, [id]: newTab });
+    setSelectedTab(newTab);
+  }
+
+  function handleTabClose(tab: TabType) {
+    const storedSelectedTabId = localStorage.getItem(storage.selectedTabId);
+    if (
+      Object.entries(parsedTabs).length > 1 &&
+      storedSelectedTabId !== tab.id
+    ) {
+      delete parsedTabs[tab.id];
+      localStorage.setItem(storage.tabs, JSON.stringify(parsedTabs));
+      setTabs(parsedTabs);
+    }
+  }
+
   function handleTabClick(tab: TabType) {
     setSelectedTab(tab);
   }
 
   useEffect(() => {
-    setInput(selectedTab?.input ?? "");
-    setOutput(selectedTab?.output ?? "");
-    localStorage.setItem(storage.selectedTabId, selectedTab?.id ?? "");
-  }, [JSON.stringify(selectedTab)]);
+    setInputOutPut({ input, output });
+  }, [input, output]);
 
   useEffect(() => {
-    if (parsedTabs) {
+    if (tabs) {
+      localStorage.setItem(storage.tabs, JSON.stringify(tabs));
+    }
+  }, [JSON.stringify(tabs ?? {})]);
+
+  useEffect(() => {
+    if (selectedTab) {
+      setInput(selectedTab?.input ?? "");
+      setOutput(selectedTab?.output ?? "");
+      localStorage.setItem(storage.selectedTabId, selectedTab?.id ?? "");
+    }
+  }, [JSON.stringify(selectedTab ?? {})]);
+
+  useEffect(() => {
+    if (Object.keys(parsedTabs).length) {
       setTabs(parsedTabs);
+      const storedSelectedTabId = localStorage.getItem(storage.selectedTabId);
       if (storedSelectedTabId) {
         setSelectedTab(parsedTabs[storedSelectedTabId] ?? null);
       } else {
@@ -85,6 +145,8 @@ function App() {
         );
         setSelectedTab(theSelectedTab ?? null);
       }
+    } else {
+      handleAddTab();
     }
   }, []);
 
@@ -121,16 +183,21 @@ function App() {
       </header>
 
       {tabs && (
-        <div className="tabs">
-          {Object.values(tabs).map((tab) => (
-            <Tab
-              id={tab.id}
-              isSelected={tab.selected}
-              callback={() => {
-                handleTabClick(tab);
-              }}
-            />
-          ))}
+        <div className="tabs-add-btn-holder">
+          <div className="tabs">
+            {Object.values(tabs).map((tab) => (
+              <Tab
+                key={tab.id + selectedTab?.id}
+                id={tab.id}
+                isSelected={tab.id == selectedTab?.id}
+                onClick={() => handleTabClick(tab)}
+                onClose={() => handleTabClose(tab)}
+              />
+            ))}
+          </div>
+          <button type="button" onClick={handleAddTab}>
+            +
+          </button>
         </div>
       )}
       <Editor

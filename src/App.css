@@ -62,9 +62,16 @@ pre {
   height: 35vh;
 }
 
-.tabs {
+.tabs-add-btn-holder {
   display: flex;
   flex-direction: row;
   background-color: var(--primary-color);
+  align-items: last baseline;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: row;
   padding: 0.4rem 0.4rem 0 0.4rem;
+  overflow-y: scroll;
 }
