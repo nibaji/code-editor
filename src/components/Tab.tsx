@@ -2,6 +2,7 @@ import {
   FormEvent,
   FormEventHandler,
   KeyboardEvent,
+  MouseEvent,
   useEffect,
   useState,
 } from "react";
@@ -43,7 +44,8 @@ const Tab = ({
     onClick();
   }
 
-  function handleClose() {
+  function handleClose(e: MouseEvent) {
+    e.stopPropagation();
     onClose();
   }
 
@@ -62,7 +64,7 @@ const Tab = ({
       {!titleEditMode ? (
         <div
           className="tab-title"
-          onClick={() => {
+          onDoubleClick={() => {
             setTitleEditMode(true);
             setTimeout(() => {
               const inputElement = document.getElementById("tab-title-input");
