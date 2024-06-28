@@ -64,6 +64,10 @@ function App() {
     (value: string | undefined) => {
       if (value && selectedTab?.id) {
         setInput(value);
+        setSelectedTab({
+          ...selectedTab,
+          input: value,
+        });
       }
     },
     [tabs, selectedTab]
