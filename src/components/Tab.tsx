@@ -28,7 +28,7 @@ const Tab = ({
   const [titleInputValue, setTitleInputValue] = useState("");
 
   function handleTitleChange() {
-    onChangeTitle({ value: titleInputValue.replace(" ", "") || title });
+    onChangeTitle({ value: titleInputValue || title });
     setTitleEditMode(false);
   }
 
@@ -77,16 +77,16 @@ const Tab = ({
             defaultValue={title}
             maxLength={12}
             placeholder="Title"
-            onChange={({ target: { value } }) =>
-              setTitleInputValue(value.replace(" ", ""))
-            }
+            onChange={({ target: { value } }) => setTitleInputValue(value)}
             onBlur={handleTitleChange}
           />
         </form>
       )}
-      <button type="button" className="error-button" onClick={handleClose}>
-        X
-      </button>
+      {!tabIsSelected && (
+        <button type="button" className="error-button" onClick={handleClose}>
+          X
+        </button>
+      )}
     </div>
   );
 };
