@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 
 import type { TabsContext as TabsContextType } from "../types/TabsContext";
-import type { Tabs } from "../types/misc";
+import type { Tab, Tabs } from "../types/misc";
 
 import { storage } from "../constants/misc";
 
@@ -26,6 +26,27 @@ function TabsProvider({ children }: { children: React.ReactNode }) {
   }
 
   function hydrate() {
+    const savedJs = localStorage.getItem(storage.js); // legacy
+    if (savedJs) {
+      // to set existing input, output to tabs format
+      if (savedJs) {
+        const id = Date.now().toString();
+        const newTab: Tab = {
+          id,
+          title: "",
+          input: savedJs,
+          output: "",
+          selected: true,
+        };
+        const newTabs: Tabs = {
+          [id]: newTab,
+        };
+        localStorage.setItem(storage.tabs, JSON.stringify(newTabs));
+        localStorage.removeItem(storage.js); // clear legacy
+        setSelectedTabId(id);
+      }
+      return;
+    }
     const storedTabs = localStorage.getItem(storage.tabs) ?? "{}";
     const parsedTabs: Tabs = JSON.parse(storedTabs);
     const storedSelectedTabId = localStorage.getItem(storage.selectedTabId);

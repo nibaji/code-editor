@@ -151,29 +151,6 @@ function App() {
     }
   }, [selectedTabId, JSON.stringify(tabs ?? {})]);
 
-  useEffect(() => {
-    // legacy
-    // to set existing input, output to tabs format
-    const savedJs = localStorage.getItem(storage.js);
-    if (savedJs) {
-      const id = Date.now().toString();
-      const newTab: TabType = {
-        id,
-        title: "",
-        input: savedJs,
-        output: "",
-        selected: true,
-      };
-      const newTabs: Tabs = {
-        [id]: newTab,
-      };
-      localStorage.setItem(storage.tabs, JSON.stringify(newTabs));
-      localStorage.removeItem(storage.js); // clear legacy
-      setInputOutput({ input: savedJs, output: "" });
-      setSelectedTabId(id);
-    }
-  }, []);
-
   return (
     <div className="App">
       <header className="App-header">
