@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 
 import Tab from "./components/Tab";
+
+import { TabsContext } from "./context/tabsContext";
 
 import { storage } from "./constants/misc";
 
@@ -11,13 +13,12 @@ import * as nightOwl from "monaco-themes/themes/Night Owl.json";
 import "./App.css";
 
 function App() {
-  const [tabs, setTabs] = useState<Tabs | null>(null);
+  const { tabs, setTabs, selectedTabId, setSelectedTabId } =
+    useContext(TabsContext);
+
   const [selectedTab, setSelectedTab] = useState<TabType | null>(null);
 
-  const [input, setInput] = useState<string>("");
-  const [output, setOutput] = useState<string>("");
-
-  function setValue({ key, value }: { key: string; value: string | boolean }) {
+  function setValue({ key, value }: { key: string; value?: string | boolean }) {
     if (selectedTab?.id) {
       const updatedTab = {
         ...selectedTab,
@@ -27,7 +28,6 @@ function App() {
         ...tabs,
         [selectedTab.id]: updatedTab,
       };
-      localStorage.setItem(storage.tabs, JSON.stringify(updatedTabs));
       setTabs(updatedTabs);
     }
   }
@@ -36,11 +36,11 @@ function App() {
     input,
     output,
   }: {
-    input: string;
-    output: string;
+    input?: string;
+    output?: string;
   }) {
-    setValue({ key: "input", value: input });
-    setValue({ key: "output", value: output });
+    setValue({ key: "input", value: input ?? selectedTab?.input });
+    setValue({ key: "output", value: output ?? selectedTab?.output });
   }
 
   let logs: any[] = [];
@@ -57,13 +57,12 @@ function App() {
           `${tempOut ? "\n" : ""}` + message.substring(1, message.length - 1);
       }
     }
-    setOutput(tempOut);
+    setInputOutPut({ output: tempOut });
   };
 
   const onChange = React.useCallback(
     (value: string | undefined) => {
       if (value && selectedTab?.id) {
-        setInput(value);
         setSelectedTab({
           ...selectedTab,
           input: value,
@@ -74,9 +73,9 @@ function App() {
   );
 
   const onRun = () => {
-    if (input) {
+    if (selectedTab?.input) {
       try {
-        const snippet = new Function(input);
+        const snippet = new Function(selectedTab?.input);
         snippet();
       } catch (error) {
         console.info({ error });
@@ -84,11 +83,12 @@ function App() {
     }
   };
 
-  const onClearOutput = () => setOutput("");
+  const onClearOutput = () => {
+    setInputOutPut({ output: "" });
+  };
 
   const onClearAll = () => {
-    setInput("");
-    setOutput("");
+    setInputOutPut({ input: "", output: "" });
   };
 
   function scrollToTab() {
@@ -113,21 +113,15 @@ function App() {
       title: "",
     };
     setTabs({ ...tabs, [id]: newTab });
-    setSelectedTab(newTab);
+    setSelectedTabId(id);
     scrollToTab();
   }
 
   function handleTabClose(tab: TabType) {
-    const storedTabs = localStorage.getItem(storage.tabs) ?? "{}";
-    const parsedTabs: Tabs = JSON.parse(storedTabs);
-    const storedSelectedTabId = localStorage.getItem(storage.selectedTabId);
-    if (
-      Object.entries(parsedTabs).length > 1 &&
-      storedSelectedTabId !== tab.id
-    ) {
-      delete parsedTabs[tab.id];
-      localStorage.setItem(storage.tabs, JSON.stringify(parsedTabs));
-      setTabs(parsedTabs);
+    if (Object.entries(tabs ?? {}).length > 1 && selectedTabId !== tab.id) {
+      const updatedTabs = { ...tabs };
+      delete updatedTabs[tab?.id];
+      setTabs(updatedTabs);
     }
   }
 
@@ -136,20 +130,12 @@ function App() {
   }
 
   useEffect(() => {
-    setInputOutPut({ input, output });
-  }, [input, output]);
-
-  useEffect(() => {
-    if (tabs) {
-      localStorage.setItem(storage.tabs, JSON.stringify(tabs));
-    }
-  }, [JSON.stringify(tabs ?? {})]);
-
-  useEffect(() => {
     if (selectedTab) {
-      setInput(selectedTab?.input ?? "");
-      setOutput(selectedTab?.output ?? "");
-      localStorage.setItem(storage.selectedTabId, selectedTab?.id ?? "");
+      setInputOutPut({
+        input: selectedTab?.input,
+        output: selectedTab?.output,
+      });
+      setSelectedTabId(selectedTab?.id ?? "");
     }
     setTimeout(() => {
       scrollToTab();
@@ -157,23 +143,17 @@ function App() {
   }, [JSON.stringify(selectedTab ?? {})]);
 
   useEffect(() => {
-    const storedTabs = localStorage.getItem(storage.tabs) ?? "{}";
-    const parsedTabs: Tabs = JSON.parse(storedTabs);
-    if (Object.keys(parsedTabs).length) {
-      setTabs(parsedTabs);
-      const storedSelectedTabId = localStorage.getItem(storage.selectedTabId);
-      if (storedSelectedTabId) {
-        setSelectedTab(parsedTabs[storedSelectedTabId] ?? null);
+    if (tabs) {
+      if (selectedTabId) {
+        setSelectedTab(tabs[selectedTabId] ?? null);
       } else {
-        const theSelectedTab = Object.values(parsedTabs).find(
-          (tab) => tab.selected
-        );
+        const theSelectedTab = Object.values(tabs).find((tab) => tab.selected);
         setSelectedTab(theSelectedTab ?? null);
       }
     } else {
       handleAddTab();
     }
-  }, []);
+  }, [selectedTabId, JSON.stringify(tabs ?? {})]);
 
   useEffect(() => {
     // legacy
@@ -193,7 +173,8 @@ function App() {
       };
       localStorage.setItem(storage.tabs, JSON.stringify(newTabs));
       localStorage.removeItem(storage.js); // clear legacy
-      setInput(savedJs);
+      setInputOutPut({ input: savedJs, output: "" });
+      setSelectedTabId(id);
     }
   }, []);
 
@@ -212,7 +193,7 @@ function App() {
           <div className="tabs">
             {Object.values(tabs).map((tab) => (
               <Tab
-                key={tab.id + selectedTab?.id + tab.title}
+                key={tab.id + String(selectedTab?.id === tab.id) + tab.title}
                 id={tab.id}
                 isSelected={tab.id == selectedTab?.id}
                 onClick={() => handleTabClick(tab)}
@@ -230,7 +211,7 @@ function App() {
         language="javascript"
         height="60vh"
         onChange={onChange}
-        value={input}
+        value={selectedTab?.input}
         onMount={(_editor, monaco) => {
           monaco.editor.defineTheme("night-owl", nightOwl as any);
           monaco.editor.setTheme("night-owl");
@@ -251,7 +232,7 @@ function App() {
       {/* <pre>{output}</pre> */}
       <Editor
         language="powershell"
-        value={output}
+        value={selectedTab?.output}
         height="30vh"
         loading
         options={{

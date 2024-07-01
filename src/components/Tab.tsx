@@ -1,14 +1,8 @@
-import {
-  FormEvent,
-  FormEventHandler,
-  KeyboardEvent,
-  MouseEvent,
-  useEffect,
-  useState,
-} from "react";
-import type { Tab as TabType } from "../types/misc";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 
-import { storage } from "../constants/misc";
+import { TabsContext } from "../context/tabsContext";
+
+import type { Tab as TabType } from "../types/misc";
 
 import "./tab.css";
 
@@ -25,14 +19,13 @@ const Tab = ({
   onClose: Function;
   onChangeTitle: ({ value }: { value: string }) => void;
 }) => {
+  const { tabs } = useContext(TabsContext);
+
   const [title, setTitle] = useState("");
   const [tabIsSelected, setTabIsSelected] = useState(isSelected);
 
   const [titleEditMode, setTitleEditMode] = useState(false);
   const [titleInputValue, setTitleInputValue] = useState("");
-
-  const storedTabs = localStorage.getItem(storage.tabs) ?? "{}";
-  const parsedTabs = JSON.parse(storedTabs);
 
   function handleTitleChange() {
     onChangeTitle({ value: titleInputValue.replace(" ", "") || title });
@@ -50,8 +43,8 @@ const Tab = ({
   }
 
   useEffect(() => {
-    if (parsedTabs) {
-      const tab: TabType = parsedTabs[id];
+    if (tabs) {
+      const tab: TabType = tabs[id];
       setTitle(tab?.title || id);
     }
   }, []);
