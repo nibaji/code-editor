@@ -28,11 +28,11 @@ function App() {
         ...tabs,
         [selectedTab.id]: updatedTab,
       };
-      setTabs(updatedTabs);
+      setSelectedTab(updatedTab);
     }
   }
 
-  function setInputOutPut({
+  function setInputOutput({
     input,
     output,
   }: {
@@ -57,7 +57,7 @@ function App() {
           `${tempOut ? "\n" : ""}` + message.substring(1, message.length - 1);
       }
     }
-    setInputOutPut({ output: tempOut });
+    setInputOutput({ output: tempOut });
   };
 
   const onChange = React.useCallback(
@@ -84,11 +84,11 @@ function App() {
   };
 
   const onClearOutput = () => {
-    setInputOutPut({ output: "" });
+    setInputOutput({ output: "" });
   };
 
   const onClearAll = () => {
-    setInputOutPut({ input: "", output: "" });
+    setInputOutput({ input: "", output: "" });
   };
 
   function scrollToTab() {
@@ -126,20 +126,16 @@ function App() {
   }
 
   function handleTabClick(tab: TabType) {
-    setSelectedTab(tab);
+    setSelectedTabId(tab.id);
   }
 
   useEffect(() => {
     if (selectedTab) {
-      setInputOutPut({
-        input: selectedTab?.input,
-        output: selectedTab?.output,
-      });
-      setSelectedTabId(selectedTab?.id ?? "");
+      setTabs({ ...tabs, [selectedTab.id]: { ...selectedTab } });
+      setTimeout(() => {
+        scrollToTab();
+      }, 500);
     }
-    setTimeout(() => {
-      scrollToTab();
-    }, 500);
   }, [JSON.stringify(selectedTab ?? {})]);
 
   useEffect(() => {
@@ -173,7 +169,7 @@ function App() {
       };
       localStorage.setItem(storage.tabs, JSON.stringify(newTabs));
       localStorage.removeItem(storage.js); // clear legacy
-      setInputOutPut({ input: savedJs, output: "" });
+      setInputOutput({ input: savedJs, output: "" });
       setSelectedTabId(id);
     }
   }, []);
