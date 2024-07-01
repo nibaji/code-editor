@@ -5,9 +5,10 @@ import Tab from "./components/Tab";
 
 import { TabsContext } from "./context/tabsContext";
 
-import { storage } from "./constants/misc";
+import languages from "./languages";
 
-import type { Tab as TabType, Tabs } from "./types/misc";
+import type { Tab as TabType } from "./types/misc";
+import type { Languages } from "./types/languages";
 
 import * as nightOwl from "monaco-themes/themes/Night Owl.json";
 import "./App.css";
@@ -17,16 +18,13 @@ function App() {
     useContext(TabsContext);
 
   const [selectedTab, setSelectedTab] = useState<TabType | null>(null);
+  const [language, setLanguage] = useState<Languages | null>("js");
 
   function setValue({ key, value }: { key: string; value?: string | boolean }) {
     if (selectedTab?.id) {
       const updatedTab = {
         ...selectedTab,
         [key]: value,
-      };
-      const updatedTabs: Tabs = {
-        ...tabs,
-        [selectedTab.id]: updatedTab,
       };
       setSelectedTab(updatedTab);
     }
@@ -43,23 +41,6 @@ function App() {
     setValue({ key: "output", value: output ?? selectedTab?.output });
   }
 
-  let logs: any[] = [];
-  console.log = function (...messages) {
-    logs.push(messages);
-    const messageArray = logs.map((e) => JSON.stringify(e));
-
-    let tempOut = "";
-    for (const message of messageArray) {
-      console.info(message);
-
-      if (message) {
-        tempOut +=
-          `${tempOut ? "\n" : ""}` + message.substring(1, message.length - 1);
-      }
-    }
-    setInputOutput({ output: tempOut });
-  };
-
   const onChange = React.useCallback(
     (value: string | undefined) => {
       if (value && selectedTab?.id) {
@@ -73,13 +54,12 @@ function App() {
   );
 
   const onRun = () => {
-    if (selectedTab?.input) {
-      try {
-        const snippet = new Function(selectedTab?.input);
-        snippet();
-      } catch (error) {
-        console.info({ error });
-      }
+    if (selectedTab?.input && language) {
+      const theFn = languages[language];
+      const theOut = theFn(selectedTab.input);
+      setInputOutput({
+        output: theOut ?? "",
+      });
     }
   };
 
