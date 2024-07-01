@@ -83,3 +83,14 @@ pre {
 .tabs::-webkit-scrollbar {
   display: none;
 }
+
+.info-button {
+  margin-left: 16px;
+  font-size: x-small;
+  font-weight: bold;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  border-color: red;
+  border-radius: 0.4rem;
+  padding: 0.2rem 0.4rem;
+}

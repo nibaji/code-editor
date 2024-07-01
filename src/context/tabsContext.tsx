@@ -37,6 +37,7 @@ function TabsProvider({ children }: { children: React.ReactNode }) {
           input: savedJs,
           output: "",
           selected: true,
+          language: "js",
         };
         const newTabs: Tabs = {
           [id]: newTab,

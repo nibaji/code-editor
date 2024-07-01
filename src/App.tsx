@@ -7,6 +7,8 @@ import { TabsContext } from "./context/tabsContext";
 
 import languages from "./languages";
 
+import { languagesMap } from "./constants/languages";
+
 import type { Tab as TabType } from "./types/misc";
 import type { Languages } from "./types/languages";
 
@@ -18,7 +20,6 @@ function App() {
     useContext(TabsContext);
 
   const [selectedTab, setSelectedTab] = useState<TabType | null>(null);
-  const [language, setLanguage] = useState<Languages | null>("js");
 
   function setValue({ key, value }: { key: string; value?: string | boolean }) {
     if (selectedTab?.id) {
@@ -54,8 +55,8 @@ function App() {
   );
 
   const onRun = () => {
-    if (selectedTab?.input && language) {
-      const theFn = languages[language];
+    if (selectedTab?.input && selectedTab.language) {
+      const theFn = languages[selectedTab.language];
       const theOut = theFn(selectedTab.input);
       setInputOutput({
         output: theOut ?? "",
@@ -69,6 +70,10 @@ function App() {
 
   const onClearAll = () => {
     setInputOutput({ input: "", output: "" });
+  };
+
+  const onLanguageChange = (language: Languages) => {
+    setValue({ key: "language", value: language });
   };
 
   function scrollToTab() {
@@ -91,6 +96,7 @@ function App() {
       input: "",
       output: "",
       title: "",
+      language: "js",
     };
     setTabs({ ...tabs, [id]: newTab });
     setSelectedTabId(id);
@@ -146,12 +152,18 @@ function App() {
           <div className="tabs">
             {Object.values(tabs).map((tab) => (
               <Tab
-                key={tab.id + String(selectedTab?.id === tab.id) + tab.title}
+                key={
+                  tab.id +
+                  String(selectedTab?.id === tab.id) +
+                  tab.title +
+                  tab.language
+                }
                 id={tab.id}
                 isSelected={tab.id == selectedTab?.id}
                 onClick={() => handleTabClick(tab)}
                 onClose={() => handleTabClose(tab)}
                 onChangeTitle={({ value }) => changeTabTitle(value)}
+                onLanguageChange={({ value }) => onLanguageChange(value)}
               />
             ))}
           </div>
@@ -161,7 +173,9 @@ function App() {
         </div>
       )}
       <Editor
-        language="javascript"
+        language={
+          selectedTab ? languagesMap[selectedTab.language] : "javascript"
+        }
         height="60vh"
         onChange={onChange}
         value={selectedTab?.input}

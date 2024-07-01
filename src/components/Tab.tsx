@@ -3,6 +3,9 @@ import { MouseEvent, useContext, useEffect, useState } from "react";
 import { TabsContext } from "../context/tabsContext";
 
 import type { Tab as TabType } from "../types/misc";
+import type { Languages } from "../types/languages";
+
+import { languagesMap } from "../constants/languages";
 
 import "./tab.css";
 
@@ -12,20 +15,26 @@ const Tab = ({
   onClick,
   onClose,
   onChangeTitle,
+  onLanguageChange,
 }: {
   id: string;
   isSelected: boolean;
   onClick: Function;
   onClose: Function;
   onChangeTitle: ({ value }: { value: string }) => void;
+  onLanguageChange: ({ value }: { value: Languages }) => void;
 }) => {
   const { tabs } = useContext(TabsContext);
 
   const [title, setTitle] = useState("");
   const [tabIsSelected, setTabIsSelected] = useState(isSelected);
 
+  const [language, setLanguage] = useState("");
+
   const [titleEditMode, setTitleEditMode] = useState(false);
   const [titleInputValue, setTitleInputValue] = useState("");
+
+  const [languageEditMode, setLanguageEditMode] = useState(false);
 
   function handleTitleChange() {
     onChangeTitle({ value: titleInputValue || title });
@@ -46,6 +55,7 @@ const Tab = ({
     if (tabs) {
       const tab: TabType = tabs[id];
       setTitle(tab?.title || id);
+      setLanguage(tab?.language || "js");
     }
   }, []);
 
@@ -54,6 +64,7 @@ const Tab = ({
       className={tabIsSelected ? "tab-selected" : "tab"}
       onClick={handleSelect}
     >
+      {/* Title */}
       {!titleEditMode ? (
         <div
           className="tab-title"
@@ -81,6 +92,31 @@ const Tab = ({
             onBlur={handleTitleChange}
           />
         </form>
+      )}
+      {/* Language */}
+      {!languageEditMode ? (
+        <button
+          type="button"
+          className="info-button"
+          onClick={() => setLanguageEditMode(true)}
+        >
+          {language.toUpperCase()}
+        </button>
+      ) : (
+        <select
+          title="language"
+          name="language"
+          defaultValue={language}
+          onChange={({ target: { value } }) => {
+            const val = value as Languages;
+            onLanguageChange({ value: val });
+            setLanguageEditMode(false);
+          }}
+        >
+          {Object.entries(languagesMap).map(([key, value]) => (
+            <option value={key}>{value}</option>
+          ))}
+        </select>
       )}
       {!tabIsSelected && (
         <button type="button" className="error-button" onClick={handleClose}>
