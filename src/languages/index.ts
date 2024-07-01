@@ -1,9 +1,11 @@
-import { LanguageOutputProcessors } from "../types/languages";
 import JS from "./js";
+import TS from "./ts";
+
+import type { LanguageOutputProcessors } from "../types/languages";
 
 const outputProcessors: LanguageOutputProcessors = {
   js: JS,
-  ts: JS,
+  ts: TS,
 };
 
 export default outputProcessors;
