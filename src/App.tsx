@@ -140,7 +140,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        JS Code Editor
+        Code Editor
         <button onClick={onClearAll} className="error-button">
           Clear All X
         </button>
